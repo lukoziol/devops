@@ -1,28 +1,37 @@
 import './App.css';
 import {useState} from "react";
-import Post from './Post';
-import MyForm from './MyForm';
+import AddInstruments from './AddInstruments.js';
+import DelInstruments from './DelInstruments.js';
+import GetInstruments from  './GetInstruments.js';
+import ShowInstruments from './ShowInstruments.js'
+import UpdateInstruments from './UpdateInstruments.js';
+
 
 function App() {
 
-    const [initialValue, setInitialValue] = useState(1234); 
+  const [id, setId] = useState(0);
+  const [idInstrumentu, setIdInstrumentu] = useState([]);
 
-    const handleInitialValue = (event) => {
-      setInitialValue(event.target.value);
-    }
+  const PokazGetInstruments = (props) => {
+    return <GetInstruments id={props.id} />
+  }
+
+  const PokazUpdateInstruments = (props) => {
+    return <UpdateInstruments id={props.id} />
+  }
+
   return (
+    <div className="prezentacja">
+      <AddInstruments changeParentHandlerId={setId} changeParentHandlerUpdate={setIdInstrumentu}/>
+      <ShowInstruments />
+      <PokazGetInstruments id={id} />
+      <DelInstruments />
+      <PokazUpdateInstruments id={idInstrumentu} />
       
-    <div >
-      {initialValue}<br />
-
-      <input onChange={handleInitialValue}/>
-
-      <Post noPosts={initialValue} changeParentHandler={setInitialValue}/>
-
-      <MyForm />
     </div>
-    
   );
+
 }
 
 export default App;
+
