@@ -1,0 +1,72 @@
+version: '3'
+
+services: 
+    myredis:
+        container_name: myredis 
+        networks:
+            - mymulticont
+        image: 'redis:alpine'
+        
+    mypostgres:
+        container_name: mypostgres
+        networks:
+            - mymulticont
+        image: 'postgres:alpine'
+        environment: 
+            - POSTGRES_PASSWORD=1qaz2wsx
+            - POSTGRES_DB=postgres
+            - POSTGRES_USER=postgres
+        volumes:
+            - ./postgresdata:/var/lib/postgresql/data
+
+    mybackend:
+        container_name: mybackend
+        networks:
+            - mymulticont
+        restart: always
+        build:
+            dockerfile: Dockerfile
+            context: ./mybackend
+        volumes:
+                - /opt/app/node_modules
+                - ./:/opt/app
+        environment: 
+                 - POSTGRES_PASSWORD=1qaz2wsx
+                 - POSTGRES_DB=postgres
+                 - POSTGRES_USER=postgres
+                 - REDIS_HOST=myredis
+                 - POSTGRES_HOST=mypostgres
+        # ports:
+        #     - '5000:5000'
+        command: ["./db-wait.sh", "mypostgres", "node", "index.js"]
+
+    mynginx:
+        container_name: mynginx
+        restart: always
+        networks: 
+            - mymulticont
+        build:
+            dockerfile: Dockerfile
+            context: ./mynginx
+        ports:
+            - '9000:80'
+
+    myfrontend:
+        container_name: myfrontend
+        networks:
+            - mymulticont
+        restart: always
+        build:
+            dockerfile: Dockerfile
+            context: ./myfrontend
+        volumes: 
+            - /opt/app/node_modules
+            - ./myfrontend:/opt/app
+        environment:
+            CHOCKIDAR_USEPOLLING: 'true'
+        # ports: 
+        #     - "3000:3000"
+
+networks:
+    mymulticont:
+        name: mymulticont
