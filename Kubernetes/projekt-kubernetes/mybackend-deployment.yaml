@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: mybackend-deployment
+  labels:
+    component: mybackend
+    app: myapp
+
+spec: 
+  template: 
+    metadata:
+      name: mybackend-pod
+      labels:
+        component: mybackend
+        app: myapp
+    spec:
+      containers: 
+        - name: mybackend-container
+          image: luko140/mybackend:latest
+                  
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: myapp-secret
+                  key: PGPASSWORD
+           
+            - name: POSTGRES_DB
+              valueFrom: 
+                configMapKeyRef:
+                  name: mypostgres-config
+                  key: PGDATABASE
+            
+            - name: POSTGRES_USER
+              valueFrom: 
+                configMapKeyRef:
+                  name: mypostgres-config
+                  key: PGUSER
+            
+            - name: POSTGRES_HOST
+              valueFrom: 
+                configMapKeyRef:
+                  name: mypostgres-config
+                  key: PGHOST
+ 
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+      component: mybackend

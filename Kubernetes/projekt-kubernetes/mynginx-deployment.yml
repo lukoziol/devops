@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mynginx-deployment
+
+  labels:
+    component: frontend
+    app: myapp
+
+spec: 
+  template: 
+    metadata:
+      name: mynginx-pod
+      labels:
+        component: frontend
+        app: myapp
+    spec:
+      containers: 
+        - name: mynginx-container
+          image: luko140/myfrontend:latest
+  replicas: 1
+  selector: 
+    matchLabels:
+      app: myapp
+      component: frontend
